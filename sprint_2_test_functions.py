@@ -41,6 +41,9 @@ import os
 import logging
 from RTF_Control_Tags_and_Styles import check_rtf, extract_font_details, extract_colour_table, extract_style_details, extract_header, extract_title, extract_column_headers, extract_table_data, extract_footnotes, extract_footer, convert_rtf
 from logger_config import logger  # Import the logger setup
+from data_extraction import debug_print
+import user_Interface
+from user_Interface import selected_folder_path
 
 # Set up logging
 log_file_path = '/Users/adithi/Downloads/sprint_3_code/test_special_characters.log'
@@ -53,7 +56,7 @@ logger = logging.getLogger()
 
 # Initialize user interface
 try:
-    user_interface()
+    user_Interface()
 except Exception:
     debug_print("UI unsuccessful")
 #TEST FUNCTIONS 
