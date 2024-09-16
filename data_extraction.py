@@ -274,6 +274,9 @@ def extract_title(page_content):
         titles_and_styles['style'] = styles
         for i in range(len(trhdr)-1):
             title_line=re.search(r'{(.+)\\cell}',page_content[trhdr[i]:end_row[i]]).group()[1:-6]
+            if title_line == "":
+                title.append(f"blank{i}")
+                continue
             title_line=re.sub(r"\\(\w+)","",title_line).strip()
             title.append(title_line)
         titles_and_styles['data'] = title
@@ -423,7 +426,7 @@ def convert_rtf(item, file_no, output_directory):
     try:
       # Extract rtf content as a string in python
         with open(item, 'r', encoding = "utf-8") as file:
-            rtf_content = file.read().replace("{\\line}\n", " ").replace("\\~", " ")
+            rtf_content = file.read().replace("{\\line}\n", " ").replace("\\~", " ").replace("\\page", " ")
             debug_print(f"RTF content loaded for file {file_no}")
         
         rtf_content = special_characters(rtf_content)
