@@ -4,8 +4,8 @@ This module is used to provide the user interface for the code
 import os
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
-from data_extraction import convert_rtf
-from data_extraction import debug_print
+from DataExtraction.data_extraction import convert_rtf
+from DataExtraction.data_extraction import debug_print
 
 OUTPUT_DIRECTORY = ""
 FOLDER_TO_DELETE = ""

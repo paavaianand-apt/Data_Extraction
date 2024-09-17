@@ -1,8 +1,8 @@
 import re
 from configparser import ConfigParser
 from datetime import datetime
-import logging1
-from json_creation import json_conversion
+from Logger import logging1
+from JSONCreation.json_creation import json_conversion
 
 # Read config.ini file
 config_object = ConfigParser()

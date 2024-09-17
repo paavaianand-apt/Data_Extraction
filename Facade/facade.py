@@ -55,10 +55,10 @@ Includes dynamic extraction using control words and robust error handling.
 * CHANGE REASON: Implementation of Sprint 3 and Sprint 2 Corrections
 '''
 from configparser import ConfigParser
-from user_Interface import user_interface
+from UI.user_Interface import user_interface
 
-from data_extraction import debug_print
-import logging1
+from DataExtraction.data_extraction import debug_print
+from Logger import logging1
 
 # Read config.ini file
 config_object = ConfigParser()
@@ -74,6 +74,6 @@ RTF_Style_Tags = config_object['RTF STYLE TAGS']
 
 try:
     user_interface(logging1.write_exceptions, RTF_tags)
-  
+
 except ImportError as e: #pragma nocover
     debug_print("UI unsuccessful") #pragma nocover
