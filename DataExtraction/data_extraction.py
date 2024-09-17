@@ -1,8 +1,7 @@
 import re
 from configparser import ConfigParser
 from datetime import datetime
-from Logger import logging1
-from JSONCreation.json_creation import json_conversion
+from Logger import logging
 
 # Read config.ini file
 config_object = ConfigParser()
@@ -16,7 +15,7 @@ Header_alignment = config_object['HEADER ALIGNMENT']
 Log_files = config_object['LOG FILE DETAILS']
 RTF_Style_Tags = config_object['RTF STYLE TAGS']
 
-logging1.start_logging()
+logging.start_logging()
 
 # Global debugging flag
 DEBUG = Debug_flag["debug"]
@@ -199,7 +198,7 @@ def extract_page_breaks(rtf_content):
     This function is used to split and extract the RTF content for each page
     '''
     page_breaks = []
-    for p in re.finditer(r"\\endnhere", rtf_content): # Using the '\endhere' tag to find page breaks
+    for p in re.finditer(r"\\endnhere", rtf_content):   # Using the '\endhere' tag to find page breaks
         page_breaks.append(p.start())
     page_breaks.append(len(rtf_content))
     return page_breaks
@@ -251,7 +250,7 @@ def extract_header(page_content):
     # Used to check whether the header content is extracted successfully
     except AttributeError:
         debug_print("Header not found")
-        logging1.write_exceptions("Header not extracted successfully in page " + str(PAGE))
+        logging.write_exceptions("Header not extracted successfully in page " + str(PAGE))
     return headers_and_styles, page_content[header_end+1:]
 
 # Function to extract the table title
@@ -288,7 +287,7 @@ def extract_title(page_content):
     # Used to check whether the table title is extracted successfully
     except AttributeError:
         debug_print("No title found")
-        logging1.write_exceptions("Title not extracted successfully in page " + str(PAGE))
+        logging.write_exceptions("Title not extracted successfully in page " + str(PAGE))
 
 # Function to extract the table column headers
 def extract_column_headers(page_content):
@@ -309,7 +308,7 @@ def extract_column_headers(page_content):
     # Used to check whether the column headers are extracted successfully
     except AttributeError:
         debug_print("Column headers not found")
-        logging1.write_exceptions("Column headers not extracted successfully in page " + str(PAGE))
+        logging.write_exceptions("Column headers not extracted successfully in page " + str(PAGE))
         column_headers = []
     return column_headers_and_styles, page_content[end_row+1:]
 
@@ -354,7 +353,7 @@ def extract_table_data(page_content, column_headers):
     # Used to check whether the table data is extracted successfully
     except AttributeError:
         debug_print("Table data not found")
-        logging1.write_exceptions("Table data not extracted successfully in page " + str(PAGE))
+        logging.write_exceptions("Table data not extracted successfully in page " + str(PAGE))
         subjects = []
     return subjects_and_styles, page_content[end_row[r]:]
 
@@ -369,7 +368,7 @@ def extract_footnotes(page_content):
     except AttributeError:
         debug_print("Footnotes not found")
         message = "Footnotes not extracted successfully in page " + str(PAGE)
-        logging1.write_exceptions(message + "\n")
+        logging.write_exceptions(message + "\n")
         footnotes = []
     return footnotes
 
@@ -392,7 +391,7 @@ def extract_footer(footnotes):
     # Used to check whether the footer is extracted successfully
     except AttributeError:
         debug_print("Footer not found")
-        logging1.write_exceptions("Footer not extracted successfully in page " + str(PAGE))
+        logging.write_exceptions("Footer not extracted successfully in page " + str(PAGE))
 
 # Function to extract the contents of a page
 def extract_page_content(page_content):
@@ -417,7 +416,7 @@ def extract_page_content(page_content):
     return page_details
 
 # Function to convert an rtf file to json
-def convert_rtf(item, file_no, output_directory):
+def convert_rtf(item, file_no, output_directory, json_conversion):
     '''
     This function is used to convert the RTF file into JSON format
     The page breaks function is called to split the content for each page
@@ -453,11 +452,11 @@ def convert_rtf(item, file_no, output_directory):
             page_details = extract_page_content(page_content)
             data.append(page_details)
         
-        return json_conversion(json_dictionary, item, output_directory, logging1.write_success)
+        return json_conversion(json_dictionary, item, output_directory, logging.write_success)
 
     except Exception as e:
         debug_print("Error, cannot be converted due to " + str(e))
-        logging1.write_exceptions(datetime.now().isoformat() + "\n" + item +
+        logging.write_exceptions(datetime.now().isoformat() + "\n" + item +
                                  " cannot be converted due to " + str(e) + "\n")
         return "Failed", "Not in Scope"
     

@@ -4,8 +4,6 @@ This module is used to provide the user interface for the code
 import os
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
-from DataExtraction.data_extraction import convert_rtf
-from DataExtraction.data_extraction import debug_print
 
 OUTPUT_DIRECTORY = ""
 FOLDER_TO_DELETE = ""
@@ -15,7 +13,7 @@ selected_folder_path = ""
 folder_path = ""
 table = ""
 
-def user_interface(write_exceptions, RTF_tags):
+def user_interface(write_exceptions, RTF_tags, convert_rtf, debug_print):
     '''
     This function is used to set up the User Interface
     '''
@@ -25,7 +23,7 @@ def user_interface(write_exceptions, RTF_tags):
     def check_rtf(file_path):
         '''
         This is a function that checks whether the RTF File adheres to the schema mentioned.
-        The adherence to the schema is found by checking whether 
+        The adherence to the schema is found by checking whether
         the commonly used RTF control tags are used in the RTF file.
         The RTF file is loaded, and then the content is read using the "file.read()" function
         A list is created to store the RTF tags
@@ -120,12 +118,12 @@ def user_interface(write_exceptions, RTF_tags):
 
     def on_delete():
         '''
-        This function is used to delete the output folder 
+        This function is used to delete the output folder
         '''
         for row in table.get_children():
             table.delete(row)
         folder_path.set("")
-    
+
     app = tk.Tk()
     app.title("RTF to JSON Converter")
     app.geometry("800x600")
@@ -178,8 +176,8 @@ def user_interface(write_exceptions, RTF_tags):
     debug_print("UI loaded")
 
 # Main function to call the user_interface() function
-if __name__ == "__main__" :
-    try: #pragma nocover
-        user_interface() #pragma nocover
-    except Exception: #pragma nocover
-        debug_print("UI unsuccessful") #pragma nocover
+# if __name__ == "__main__" :
+#     try: #pragma nocover
+#         user_interface() #pragma nocover
+#     except Exception: #pragma nocover
+#         debug_print("UI unsuccessful") #pragma nocover

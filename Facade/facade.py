@@ -55,10 +55,11 @@ Includes dynamic extraction using control words and robust error handling.
 * CHANGE REASON: Implementation of Sprint 3 and Sprint 2 Corrections
 '''
 from configparser import ConfigParser
-from UI.user_Interface import user_interface
 
-from DataExtraction.data_extraction import debug_print
-from Logger import logging1
+from UI.user_Interface import user_interface
+from DataExtraction import data_extraction
+from JSONCreation import json_creation
+from Logger import logging
 
 # Read config.ini file
 config_object = ConfigParser()
@@ -72,8 +73,17 @@ Header_alignment = config_object['HEADER ALIGNMENT']
 Log_files = config_object['LOG FILE DETAILS']
 RTF_Style_Tags = config_object['RTF STYLE TAGS']
 
+def debug_print(content):
+    data_extraction.debug_print(content)
+
+def convert_rtf(file_path, file_no, output_directory):
+    return data_extraction.convert_rtf(file_path, file_no, output_directory, json_conversion)
+
+def json_conversion(json_dictionary, item, output_directory, write_success):
+    return json_creation.json_conversion(json_dictionary, item, output_directory, write_success)
+
 try:
-    user_interface(logging1.write_exceptions, RTF_tags)
+    user_interface(logging.write_exceptions, RTF_tags, convert_rtf, debug_print)
 
 except ImportError as e: #pragma nocover
     debug_print("UI unsuccessful") #pragma nocover
