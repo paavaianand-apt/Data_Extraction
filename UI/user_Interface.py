@@ -5,15 +5,12 @@ import os
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
 
-OUTPUT_DIRECTORY = ""
-FOLDER_TO_DELETE = ""
-
 # global value declaration
 selected_folder_path = ""
 folder_path = ""
 table = ""
 
-def user_interface(process_file, debug_print):
+def user_interface(process_files, debug_print):
     '''
     This function is used to set up the User Interface
     '''
@@ -26,35 +23,8 @@ def user_interface(process_file, debug_print):
         if folder_selected:
             folder_path.set(folder_selected)
             selected_folder_path = folder_selected
-            process_files(folder_selected)
+            process_files(folder_selected, table)
 
-    def process_files(selected_folder):
-        '''
-        This function is used to process the files in the folder
-        It creates an output directory in the parent folder
-        It iterates through the folder
-        It checks if the file is an RTF file
-        If the file is an RTF file, the schema of the file is checked
-        If the file adheres to the schema, the file is converted to JSON
-        '''
-        global OUTPUT_DIRECTORY, FOLDER_TO_DELETE  # Declare as global variables
-        for row in table.get_children():
-            table.delete(row)
-
-        if not selected_folder:
-            return
-
-        files = os.listdir(selected_folder)
-        OUTPUT_DIRECTORY = os.path.join(selected_folder, 'Output')
-        FOLDER_TO_DELETE = OUTPUT_DIRECTORY  # Assign the output directory to FOLDER_TO_DELETE
-        os.makedirs(OUTPUT_DIRECTORY, exist_ok=True)
-        print(f'{OUTPUT_DIRECTORY} successfully created')
-        file_no = 0
-        for file in files:
-            status, remarks, color, if_inc = process_file(file, file_no, selected_folder, OUTPUT_DIRECTORY)
-            if if_inc:
-                file_no += 1
-            table.insert("", "end", values=(file, status, remarks), tags=(color,))
 
     def on_continue():
         '''

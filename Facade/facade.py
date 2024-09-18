@@ -54,12 +54,12 @@ Includes dynamic extraction using control words and robust error handling.
 * AUTHOR NAME(s): Shreeja Katama
 * CHANGE REASON: Implementation of Sprint 3 and Sprint 2 Corrections
 '''
+import os
 from configparser import ConfigParser
 
 from UI.user_Interface import user_interface
 from DataExtraction import data_extraction
 from JSONCreation import json_creation
-from Logger import logging
 
 # Read config.ini file
 config_object = ConfigParser()
@@ -76,14 +76,38 @@ RTF_Style_Tags = config_object['RTF STYLE TAGS']
 def debug_print(content):
     data_extraction.debug_print(content)
 
-def process_file(file_path, file_no, selected_folder, output_directory):
-    return data_extraction.process_file(file_path, file_no, selected_folder, output_directory, json_conversion)
+def process_files(selected_folder, table):
+    '''
+    This function is used to process the files in the folder
+    It creates an output directory in the parent folder
+    It iterates through the folder
+    It checks if the file is an RTF file
+    If the file is an RTF file, the schema of the file is checked
+    If the file adheres to the schema, the file is converted to JSON
+    '''
+    for row in table.get_children():
+        table.delete(row)
+
+    if not selected_folder:
+        return
+
+    files = os.listdir(selected_folder)
+    output_directory = os.path.join(selected_folder, 'Output')
+    os.makedirs(output_directory, exist_ok=True)
+    print(f'{output_directory} successfully created')
+    file_no = 0
+    for file in files:
+        status, remarks, color, if_inc = data_extraction.process_file(file, file_no, selected_folder, output_directory, json_conversion)
+        if if_inc:
+            file_no += 1
+        table.insert("", "end", values=(file, status, remarks), tags=(color,))
+
 
 def json_conversion(json_dictionary, item, output_directory, write_success):
     return json_creation.json_conversion(json_dictionary, item, output_directory, write_success)
 
 try:
-    user_interface(process_file, debug_print)
+    user_interface(process_files, debug_print)
 
 except ImportError as e: #pragma nocover
     debug_print("UI unsuccessful") #pragma nocover

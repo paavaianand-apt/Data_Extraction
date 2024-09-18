@@ -3,7 +3,6 @@ import re
 from configparser import ConfigParser
 from datetime import datetime
 from Logger import logging
-from Logger.logging import write_exceptions
 
 # Read config.ini file
 config_object = ConfigParser()
@@ -57,7 +56,7 @@ def check_rtf(file_path):
 
         debug_print(i + " not in rtf")
         # If RTF tag is not present, the RTF does not adhere to the schema
-        write_exceptions(i + " not in RTF \n")
+        logging.write_exceptions(i + " not in RTF \n")
         flag = False
         break
     return flag
@@ -480,7 +479,7 @@ def process_file(file, file_no, selected_folder, OUTPUT_DIRECTORY, json_conversi
             debug_print("RTF File converted successfully")
         else:
             print(f"RTF File {file} does not conform to schema, cannot be converted")
-            write_exceptions(
+            logging.write_exceptions(
                 f"RTF File {file} does not conform to schema, "
                 "cannot be converted\n"
             )
