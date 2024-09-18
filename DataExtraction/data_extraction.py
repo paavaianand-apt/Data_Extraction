@@ -1,7 +1,9 @@
+import os
 import re
 from configparser import ConfigParser
 from datetime import datetime
 from Logger import logging
+from Logger.logging import write_exceptions
 
 # Read config.ini file
 config_object = ConfigParser()
@@ -34,31 +36,31 @@ def debug_print(message):
         print(message)
 
 def check_rtf(file_path):
-        '''
-        This is a function that checks whether the RTF File adheres to the schema mentioned.
-        The adherence to the schema is found by checking whether 
-        the commonly used RTF control tags are used in the RTF file.
-        The RTF file is loaded, and then the content is read using the "file.read()" function
-        A list is created to store the RTF tags
-        An iterator is used to parse the list and check if all the tags are present in the file
-        '''
-        with open(file_path, 'r', encoding = "utf-8") as file:
-            rtf_content = file.read().replace("{\\line}\n", " ").replace("\\~", " ")
-        # Commonly used RTF tags
-        rtf_tags = [RTF_tags['header'],
-                    RTF_tags['title'],RTF_tags["row start"],
-                    RTF_tags["row end"],RTF_tags["cell end"]]
-        flag = True
-        for i in rtf_tags:
-            if i in rtf_content:
-                continue
+    '''
+    This is a function that checks whether the RTF File adheres to the schema mentioned.
+    The adherence to the schema is found by checking whether
+    the commonly used RTF control tags are used in the RTF file.
+    The RTF file is loaded, and then the content is read using the "file.read()" function
+    A list is created to store the RTF tags
+    An iterator is used to parse the list and check if all the tags are present in the file
+    '''
+    with open(file_path, 'r', encoding = "utf-8") as file:
+        rtf_content = file.read().replace("{\\line}\n", " ").replace("\\~", " ")
+    # Commonly used RTF tags
+    rtf_tags = [RTF_tags['header'],
+                RTF_tags['title'],RTF_tags["row start"],
+                RTF_tags["row end"],RTF_tags["cell end"]]
+    flag = True
+    for i in rtf_tags:
+        if i in rtf_content:
+            continue
 
-            debug_print(i + " not in rtf")
-            # If RTF tag is not present, the RTF does not adhere to the schema
-            # write_exceptions(i + " not in RTF \n")
-            flag = False
-            break
-        return flag
+        debug_print(i + " not in rtf")
+        # If RTF tag is not present, the RTF does not adhere to the schema
+        write_exceptions(i + " not in RTF \n")
+        flag = False
+        break
+    return flag
 
 # Function to extract font details from RTF content
 def extract_font_details(rtf_content):
@@ -459,4 +461,36 @@ def convert_rtf(item, file_no, output_directory, json_conversion):
         logging.write_exceptions(datetime.now().isoformat() + "\n" + item +
                                  " cannot be converted due to " + str(e) + "\n")
         return "Failed", "Not in Scope"
-    
+
+
+def process_file(file, file_no, selected_folder, OUTPUT_DIRECTORY, json_conversion):
+    file_path = os.path.join(selected_folder, file)
+    if_inc = False
+    if not file.endswith('.rtf'):
+        status = "Failed"
+        remarks = "Choose a RTF File"
+        color = 'red'
+        debug_print("Not an RTF File, cannot be converted")
+    elif os.path.isfile(file_path):
+        if_inc = True
+        if check_rtf(file_path):
+            print("RTF File conforms to schema")
+            status, remarks = convert_rtf(file_path, file_no, OUTPUT_DIRECTORY, json_conversion)
+            color = 'green' if status == "Successful" else 'red'
+            debug_print("RTF File converted successfully")
+        else:
+            print(f"RTF File {file} does not conform to schema, cannot be converted")
+            write_exceptions(
+                f"RTF File {file} does not conform to schema, "
+                "cannot be converted\n"
+            )
+
+            status = "Failed"
+            remarks = "No remarks Found"
+            color = 'red'
+    else:
+        status = "Failed"
+        remarks = "No remarks Found"
+        color = 'red'
+
+    return status, remarks, color, if_inc

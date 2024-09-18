@@ -76,14 +76,14 @@ RTF_Style_Tags = config_object['RTF STYLE TAGS']
 def debug_print(content):
     data_extraction.debug_print(content)
 
-def convert_rtf(file_path, file_no, output_directory):
-    return data_extraction.convert_rtf(file_path, file_no, output_directory, json_conversion)
+def process_file(file_path, file_no, selected_folder, output_directory):
+    return data_extraction.process_file(file_path, file_no, selected_folder, output_directory, json_conversion)
 
 def json_conversion(json_dictionary, item, output_directory, write_success):
     return json_creation.json_conversion(json_dictionary, item, output_directory, write_success)
 
 try:
-    user_interface(logging.write_exceptions, RTF_tags, convert_rtf, debug_print)
+    user_interface(process_file, debug_print)
 
 except ImportError as e: #pragma nocover
     debug_print("UI unsuccessful") #pragma nocover

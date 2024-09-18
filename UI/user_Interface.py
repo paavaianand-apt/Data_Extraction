@@ -13,39 +13,10 @@ selected_folder_path = ""
 folder_path = ""
 table = ""
 
-def user_interface(write_exceptions, RTF_tags, convert_rtf, debug_print):
+def user_interface(process_file, debug_print):
     '''
     This function is used to set up the User Interface
     '''
-    def write_ui_exceptions(content):
-        write_exceptions(content)
-    # Function to check if RTF File adheres to the schema
-    def check_rtf(file_path):
-        '''
-        This is a function that checks whether the RTF File adheres to the schema mentioned.
-        The adherence to the schema is found by checking whether
-        the commonly used RTF control tags are used in the RTF file.
-        The RTF file is loaded, and then the content is read using the "file.read()" function
-        A list is created to store the RTF tags
-        An iterator is used to parse the list and check if all the tags are present in the file
-        '''
-        with open(file_path, 'r', encoding = "utf-8") as file:
-            rtf_content = file.read().replace("{\\line}\n", " ").replace("\\~", " ")
-        # Commonly used RTF tags
-        rtf_tags = [RTF_tags['header'],
-                    RTF_tags['title'],RTF_tags["row start"],
-                    RTF_tags["row end"],RTF_tags["cell end"]]
-        flag = True
-        for i in rtf_tags:
-            if i in rtf_content:
-                continue
-
-            debug_print(i + " not in rtf")
-            # If RTF tag is not present, the RTF does not adhere to the schema
-            write_exceptions(i + " not in RTF \n")
-            flag = False
-            break
-        return flag
     def upload_folder():
         '''
         This is a function to get the folder from the user
@@ -80,34 +51,9 @@ def user_interface(write_exceptions, RTF_tags, convert_rtf, debug_print):
         print(f'{OUTPUT_DIRECTORY} successfully created')
         file_no = 0
         for file in files:
-            file_path = os.path.join(selected_folder, file)
-            if not file.endswith('.rtf'):
-                status = "Failed"
-                remarks = "Choose a RTF File"
-                color = 'red'
-                debug_print("Not an RTF File, cannot be converted")
-            elif os.path.isfile(file_path):
+            status, remarks, color, if_inc = process_file(file, file_no, selected_folder, OUTPUT_DIRECTORY)
+            if if_inc:
                 file_no += 1
-                if check_rtf(file_path):
-                    print("RTF File conforms to schema")
-                    status, remarks = convert_rtf(file_path, file_no, OUTPUT_DIRECTORY)
-                    color = 'green' if status == "Successful" else 'red'
-                    debug_print("RTF File converted successfully")
-                else:
-                    print(f"RTF File {file} does not conform to schema, cannot be converted")
-                    write_ui_exceptions(
-                        f"RTF File {file} does not conform to schema, "
-                        "cannot be converted\n"
-                        )
-
-                    status = "Failed"
-                    remarks = "No remarks Found"
-                    color = 'red'
-            else:
-                status = "Failed"
-                remarks = "No remarks Found"
-                color = 'red'
-
             table.insert("", "end", values=(file, status, remarks), tags=(color,))
 
     def on_continue():
